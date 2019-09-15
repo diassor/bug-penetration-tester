@@ -1,0 +1,52 @@
+Chapter 4. Unsanitized Data &#x2013; An XSS Case Study
+
+When a browser is loading the src attribute on an HTML tag, it's
+executing the code that attribute is pointing to. It doesn't have
+to be a file – it can just be code included in the attribute
+string. And it's not just the src attribute that can execute
+JavaScript.
+
+The following is an example of an XSS testing snippet. It uses the
+onmouseover attribute to execute a JavaScript alert() as a classic
+XSS canary
+
+
+<a onmouseover="alert(document.location)" href="#">snippet text</a>
+
+document.location is included as a way of easily referencing the exact URL where the XSS is occurring.
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Testing for XSS – Where to Find It, How to Verify It
+    hacer toda la pagina para cargar los diferentes scripts
+    con la ayuda de la extencion de xss valider de burt-suite
+    esta super emocionante este tipo de ataque
+
+
+
+
+Presentacion de un reporte
+
+
+    CATEGORY: Persistent / Stored XSS
+
+    TIME: 1:12 AM (1:12) UTC
+
+    URL: https://google-gruyere.appspot.com/09809809887686765654654/newsnippet.gtl
+
+    PAYLOAD: <a onmouseover="alert(document.cookie)">xxs link</a>
+
+    METHODOLOGY: XSS payload submitted manually
+
+    INSTRUCTIONS TO REPRODUCE:
+
+    1. Navigate to "New Snippet" submission page
+    2. Enter the XSS payload into the "New Snippet" form.
+    3. Click "Submit" and create a new snippet.
+    4. The malicious XSS contained in the payload is executed whenever someone hovers over the snippet with that link.
+
+    ATTACK SCENARIO:
+    With a persistent XSS vulnerability to exploit, a malicious actor could exfiltrate sensitive cookies to steal the identity of Gruyere's users, impersonating them both in the app and in whatever other accounts they are logged into at the time of the XSS script's execution.

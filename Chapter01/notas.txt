@@ -1,0 +1,8 @@
+The snippet in question is a pretty simple test – it executes an
+alert() function within an improperly sanitized src attribute
+attached to an <img> HTML tag:
+
+<IMG SRC=javascript:alert('XSS')>
+
+it's good to remember to output some info about where the XSS is
+happening (for example, alert(window.location.href)).

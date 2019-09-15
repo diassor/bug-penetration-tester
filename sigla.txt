@@ -1,0 +1,22 @@
+Vulnerability Rating Taxonomy (VRT)
+     resources such as the VRT can help you triangulate that
+     perfect intersection of effort and reward.
+
+Rules of Engagement (ROE)
+    it offers the researcher some protection from legal action by
+    companies trying to discourage aggressive auditing, or who
+    interpret their own RoE differently than you do.
+
+A command-line interface (CLI)
+
+IBBP   The Internet Bug Bounty Program
+
+Ruby version manager  (rvm)
+Node version manager  (nvm)
+
+Relative Attack Surface Quotient (RASQ)
+
+    The Attack Surface of an application is, put succinctly,
+    wherever data can enter or exit the app. Attack-surface
+    analysis describes the methods used to describe the vulnerable
+    parts of an application

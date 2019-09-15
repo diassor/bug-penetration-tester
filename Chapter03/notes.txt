@@ -1,0 +1,74 @@
+Relative Attack Surface Quotient (RASQ)
+
+    The Attack Surface of an application is, put succinctly,
+    wherever data can enter or exit the app. Attack-surface
+    analysis describes the methods used to describe the vulnerable
+    parts of an application
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Scanning and Target Reconaissance
+
+
+
+
+Brute-forcing Web Content
+
+    Fuzzing tools such as wfuzz can be used to discover web
+    content by trying different paths, with URIs taken from giant
+    wordlists
+
+    clone the SecLists GitHub repository (a curated collection of
+    fuzz lists, SQLi injection scripts, XSS snippets, and other
+    generally malicious input) at https://github.com/danielmiessler/SecLists. We can start a scan of the target
+    site simply be replacing the part of the URL we'd like to
+    replace with the wordlist with the FUZZ string:
+
+    wfuzz -w ~/Code/SecLists/Discovery/Web-Content/SVNDigger/all.txt --hc 404 http://webscantest.com/FUZZ
+
+    @@@@@@@@@@@@@
+        Keep in mind that brute-forcers are very noisy. Only use them against isolated staging/QA environments, and only with permission. If your brute-forcer overwhelms a production server, it's really no different from a DoS attack.
+
+        ejemplo :
+        wfuzz -w ~/SecLists-master/Discovery/Web-Content/SVNDigger/all.txt --hc 404 http://webscantest.com/FUZZ
+
+
+
+Kali Linux (Tool Page)
+    apt -y install seclists
+
+
+
+Burp Spider
+
+    To kick-off a spidering session, make sure you have the appropriate domains in scope:
+
+    You can then right-click the target domain and select Spider this host:
+
+
+Striker
+
+    Striker (https://github.com/s0md3v/Striker) is a Python-
+    offensive information and vulnerability scanner that does a
+    number of checks using different sources, but has a particular
+    focus on DNS and network information. You can install it by
+    following the instructions on its Github page. Like many
+    Python projects, it simply requires cloning the code and
+    downloading the dependencies listed in requirements.txt.
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Further Reading
+
+You can find out more about some of the topics we have discussed
+in this chapter at:
+
+    SecLists: https://github.com/danielmiessler/SecLists
+    Measuring Relative Attack Surfaces: http://www.cs.cmu.edu/~wing/publications/Howard-Wing03.pdf
+    XSScrapy: https://github.com/DanMcInerney/xsscrapy

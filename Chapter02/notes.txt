@@ -1,0 +1,52 @@
+Chapter 2. Choosing Your Hunting Ground
+
+Bugcrowd (https://www.bugcrowd.com/) has a standard sign-up
+process and doesn't require any proof of experience to become a
+researcher. You can choose to make your profile public (so people
+can see the kudos points you've accumulated and general stats
+about your involvement) or keep it private.
+
+HackerOne (https://www.hackerone.com/) is a similar platform – it
+has its own point system (reputation) and also calculates a
+variety of metrics that it uses as the basis for its Leaderboard
+and for invitations to its own private programs.
+
+Synack   (one of Synack's specialties).
+
+
+Finding Other Programs
+
+Many companies have bug bounty programs. If there's a particular
+site or app you're interested in testing, finding out whether it's
+supported by a bug bounty is as easy as a couple of searches.
+Queries that take advantage of Google's expressive search syntax,
+such as inurl:/security/, intext:bug bounty, and intext:reward are
+all great building blocks you can use to discover new programs.
+You can even combine them to drill down into bounty programs that
+are specific to a certain application – a query such as
+intext:"Bug Bounty" AND intext:"vulnerability" AND intext:"reward"
+AND inurl:"/wp-content/"  can be used to return program pages for
+Wordpress sites (credit to Sachin Wagh (@tiger_tigerboy) for the
+dorks).
+
+https://www.bugcrowd.com/bug-bounty-list/
+
+
+The attack surface of a software environment is the sum of the
+    different points (the attack vectors) where an unauthorized
+    user (the attacker) can try to enter data to or extract data
+    from an environment.
+
+
+Further Reading
+
+    You can find out more about some of the topics we have
+    discussed in this chapter at:
+
+    *   Google Alerts: https://www.google.co.in/alerts
+    *   BountyFactory: https://bountyfactory.io/en/index.html
+    *   Google Bughunter University: https://sites.google.com/site/
+            bughunteruniversity/
+    *   Firebounty: https://firebounty.com
+    *   The internet bug bounty program: https:/
+            internetbugbounty.org/
