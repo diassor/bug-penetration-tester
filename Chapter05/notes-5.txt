@@ -1,0 +1,38 @@
+Chapter 5. SQL, Code Injection, and Scanners
+
+Then you can create a symlink (symbolic link) so that all the arachni CLI packages will be available within your path (fill in the correct path to your arachni installation):
+
+sudo ln -s /Path/to/arachni-1.5.1-0.5.12/bin/arachni* /usr/local/bin
+
+You might find that, after you symlink your arachni executables to your path, you receive the following error:
+
+/usr/local/bin/arachni: line 3: /usr/local/bin/readlink_f.sh: No such file or directory
+/usr/local/bin/arachni: line 4: readlink_f: command not found
+/usr/local/bin/arachni: line 4: ./../system/setenv: No such file or directory
+
+If you receive this error, simply symlink, copy, or move the readlink_f.sh script from your arachni installation's bin directory to your own path. In this case, we'll symlink it:
+
+sudo ln -s /Path/to/arachni-1.5.1-0.5.12/bin/readlink_f.sh /usr/local/bin/readline_f.sh
+
+
+
+Now when we use arachni later in the chapter, we can invoke it directly, as opposed to having to type the full path each time.
+
+
+~~~~~~~~~~~~~~ok arachni esta instalado en el bin del sistema~~~~~~
+
+
+
+SELECT title, author FROM posts WHERE id=$id
+
+
+Google Dorks for SQLi
+    Here are a few examples of common Google Dorks for discovering instances of SQLi:
+
+    inurl:index.php?id=
+    inurl:buy.php?category=
+    inurl:pageid=
+    inurl:page.php?file=
+
+
+@@@@@@@@@@@@@@ Read more about arachni , How does used it? @@@@
