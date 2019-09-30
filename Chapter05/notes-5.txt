@@ -26,7 +26,10 @@ Now when we use arachni later in the chapter, we can invoke it directly, as oppo
 SELECT title, author FROM posts WHERE id=$id
 
 
+
 Google Dorks for SQLi
+            https://www.exploit-db.com/
+
     Here are a few examples of common Google Dorks for discovering instances of SQLi:
 
     inurl:index.php?id=
@@ -36,3 +39,272 @@ Google Dorks for SQLi
 
 
 @@@@@@@@@@@@@@ Read more about arachni , How does used it? @@@@
+
+We'll also be using Arachni as our go-to scanner. Though noisy,
+scanners can be indispensable for the appropriate situation, and
+are great at flushing out otherwise hard-to-detect bugs. Arachni
+is an excellent choice because it's open source, multi-threaded,
+extensible via plugins, and has a great CLI that allows it to be
+worked into other automated workflows
+
+
+esta debe estar en usr/local/bin por medio de un enlace sinbolico
+desde la carpeta donde esta el software
+
+este tema lo veremos mas adelante
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+SQLi and other code injection attacks - Accepting
+    Unvalidated Data
+
+SELECT title, author FROM posts WHERE id=$id
+
+$id =
+    value is being inserted directly—with no data sanitization,
+    removal of dangerous code, or data type transformation—the
+    SQL statement is dynamic, and subject to tampering
+
+
+SELECT title, author FROM posts WHERE id=10 OR 1=1
+
+10 or 1=1 is the user-supplied data . By modifying the
+WHERE clause ,
+    the example is innocuous (inocuo) ,but if the statement
+    asked for account information from user table , or
+    a part of the database associated with privileges ,
+    instead (en lugar de) of just information about a blog
+    post , that could represent a way to seriosly demage
+    the aplication
+
+@@@@
+    Testing for SQLi with sqlmap Where to find it and
+    how to verify it
+
+
+    sqlmap -u "http://webscantest.com/datastore/search_get_by_id.php?id=3"
+
+    -u = url target
+
+
+it looks like the back-end DBMS is 'MySQL'. Do you want to skip test payloads specific for other DBMSes? [Y/n]
+
+    parece que el DBMS de fondo es 'MySQL'. ¿Desea omitir cargas de prueba específicas para otros DBMS? [S / n]
+
+
+If you can successfully identify the backend through your own
+investigations, it's a good idea to say yes here,
+    just to reduce any posssible noise in the report
+
+you should also get a question about what risk level of
+input values you're willing to tolerate:
+
+    for the remaining tests, do you want to include all tests for 'MySQL' extending provided level (1) and risk (1) values?
+
+
+be carrefull with noise and damange any data
+    Because of the sensitivity of the information and processes contained in the targeted SQL database, it's important to tread carefully with vulnerabilities associated with backend systems.
+
+
+for the previous example id=3 is vulnerable. Do you want
+    keep testing the others (if any)? [y/N]  y
+
+
+Success! There are a few vulnerabilities related to the id parameter, including a pair of blind SQLi vulnerabilities (where the results of the injection are not directly visible in the GUI) and error- and UNION-based inputs—all confirmed by the documentation on webscantest.com
+
+
+
+
+@@@@@@@@@@@
+    Trawling for Bugs - Using Google Dorks and Python
+    for SQLi Discovery
+
+
+Google Dorks for SQLi
+    means employing specially-crafted (especialmente disenado)
+    search queries to get search engines to return sites
+    susceptible to SQLi and others vulnerabilities
+
+    inurl:index.php?id=
+    inurl:buy.php?category=
+    inurl:pageid=
+    inurl:page.php?file=
+
+the basic form
+    search_method:domain/dork
+        intitle:”EvoCam” inurl:”webcam.html”
+
+    This dork doesn't target a particular URL; it's simply
+    looking for any site where the page's title contains Evocam
+    and the page's URL contains webcam.html.
+
+
+Validating a Dork
+    while brwosing a small security site, I find the following
+    dork, list on the company's Bugtrag section
+    (the title of the company featured un the intex field
+    has been changed):
+
+    inurl:index.jsp? intext:"some company title"
+
+this dork though it doesn't have a target URL , does focus
+on a particular company via the "index" search filter.
+Fot the "inurl" value , "jps" is the extention for 'JPS'
+a web application framework for java servlets.
+jps is a little old-it was Sun Microsystems' response
+to Microsoft's 'Active Server Page(ASP)' in 1999-but
+like so much tech , is still employed in legacy industries
+, small business and small "dev" shops.
+
+
+When we use this dork to search Google, our first result returns a URL containing index.jsp?:
+
+    http://www.examplesite.com/index.jsp?idPagina=12
+
+        JPS (Java Virtual Machine Process Status Tool) is a command is used to check all the Hadoop daemons like NameNode, DataNode, ResourceManager, NodeManager etc. which are running on the machine
+
+We can see the site is making a GET request , passing a parameter
+identifying the page visited (idPagina). Let's check that and see
+if it's vulnerable, which we can do by passing the URL to sqlmap
+
+sqlmap -u "http://www.examplesite.com/index.jsp?idPagina=12"
+
+sqlmap is valid command options Dorks , '-g', making it also
+posssible to pass a string of the dork you'd like to search
+(instead of doing the search manually )
+
+    sqlmap -g 'inurl:index.jsp? intext:"some company title"'
+
+        https://www.exploit-db.com/
+
+@@@@@@@@        Time-based SQLi
+
+    Is when SLEEP() or another similar function is called to
+inject a delay into to query being processed.
+
+This is combined with conditionals and other logic, is
+then used to extract information from database by slowly
+enumerating resources.
+
+if your payload produces a delay a delay , you can infer
+your condition evaluated to 'TRUE' and the assumptions
+you made are correct.
+
+doing this enough can expose sensitive information to
+determined attackers.
+
+As an attack, time-based SQLi is very noise . the impact
+on application logs is relatuvely small, but repeated use
+of time-based SQLi will cause large CPU consumption spikes,
+easily detectable by an attentive sysadmin or SRE
+
+If we take the payload from the sqlmap time-based results (12 RLIKE SLEEP(5)) and plug it into the idPagina URL parameter, we find it's successful! The page takes longer to load as our SLEEP(5) command is not sanitized and gets mistakenly executed by the application's SQL server. This is a bona fide bug.
+
+@@@@@@@@@@@@@@@
+        Scannig for SQLi with arachni
+
+Arachni es our weapon of choice for SQLi sacnners because
+it's open source, extensible, multi-threaded, and can be
+used from a CLI that plays nicely with other form of automation.
+
+--timeout
+        The --timeout parameter allows you to pass as an argument to
+        specify how long arachni should wait before shutting down
+        and compiling a report based on the collected data.
+
+--checks
+        By default, when you target a URL, without passing any extra
+        information, you'll be applying every check arachni has in
+        its system
+
+        But sometimes you might want to exclude some lower-priority
+        warnings—arachni, for example, will warn you when a company
+        email is exposed publicly, but usually that's not an issue
+        if the email is a corporate handle or meant to otherwise be
+        customer-facing. Some forms of data leakage are important,
+        but for most companies this is not one of them. You also
+        might want to exclude noisy checks that would put too much
+        of a load on the target server or network architecture.
+
+        The checks option takes as its arguments the checks you
+        should include and exclude, with the splat character *
+        operating as its usual stand-in for all options and excluded
+        checks indicated by the use of a minus sign (-).
+
+
+--scope-include-subdomains
+        This switch does just what it sounds like—it tells arachni
+        that, when it spiders a URL, it's free to follow any links
+        it finds to that site's subdomains.
+
+
+--plugin 'PLUGIN:OPTION=VALUE,OPTION2=VALUE2'
+        The plugin option allows us to pass environment variables
+        that an arachni plugin might depend on (authentication
+        tokens for SaaS variables, configuration settings, SMTP
+        usernames and passwords, and so on).
+
+
+--http-request-concurrency MAX_CONCURRENCY
+        Arachni's ability to keep its HTTP requests in check is
+        critical to ensuring a target server isn't overwhelmed with
+        traffic. Even if scans are allowed under the terms of
+        engagement for a specific target range, they'll typically
+        set a speed limit for the scanner to prevent the equivalent
+        of a DoS attack. And regardless, turning your request
+        concurrency down can ensure you don't get hit by a WAF. The
+        default for the scanner's MAX_CONCURRENCY is 20 HTTP
+        requests/second.
+
+
+Writing a Wrapper Script
+    just as we wrote our bootstrap_burp.sh
+    Script as convenient wrapper around the longer command
+    initializing Burp's JAR file.
+    son that we don't have to type full path and all our
+    options each time we start the application, we can do
+    the same fot arachni
+    Putting together all of the options we've just covered
+    (except fot --plugins ), this is what our script looks
+    like. We'll call it "ascan.sh"
+
+    #!/bin/sh
+
+    arachni $1 \
+        --checks=*,-emails* \
+        --scope-include-subdomains \
+        --timeout 0:05:00 \
+        --http-request-concurrency 10
+
+
+    Like bootstrap_burp.sh we  can make it executables through a
+    simple chmod u+x ascan.sh and add it into pou path by
+    using
+        sudo ln -s /path/to/ascan.sh  /usr/local/bin/ascan
+
+    The timeout admittedly long, to accommodate the longer
+    that occur with a smaller request pool, as well as the extended
+    waiting necesary because of time-based SQLi calls .
+
+
+
+@@@@@@@@@@@@@@@@@
+        NoSQL injection - injecting Malformed MongoDB Queries
+
+According to OWASP, there are over 150 varieties of NoSQL database
+available for use in web application.
+
+We're going to take a look specifically at MongoDB, the most
+widely-used open-source , unstructured NoSQL database to
+illustrate can work across a variety of toolset
+
+The MongoDB API usually expects BSON data (binary JSON)
+construted using a secure BSON query constrution.
+But in certain cases, MongoDB can also unserialized JSON
+and JavaScript expressions-like in the case of the
+$where operator . It's usually used-like SQL "WHERE"
+operator-as a filter .
+
+
+    db.myCollection.find( { $where: "this.foo == this.baz" } );
