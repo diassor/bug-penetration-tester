@@ -308,3 +308,117 @@ operator-as a filter .
 
 
     db.myCollection.find( { $where: "this.foo == this.baz" } );
+
+
+ultimately , if the data is not properly sanitized, the
+MongoDB $where clause is capable of inserting and
+executing entire scripts Writing in java script.
+
+unlike sql , which is declarative and somewhat limited
+as a language, MongoDB's NoSQL support for sophiticated
+java script conditionals opens it up to exploit served by
+the language's full range of features .
+
+Some inputs are designed as Denial-of-Service (DoS) and resource consumption attacks:
+
+
+';sleep(5000); ';it=new%20Date();do{pt=new%20Date();}while(pt-it<5000);
+
+While some aim for password discovery:
+
+' && this.password.match(/.*/)//+%00
+
+
+
+Another vector for code injection within MongoDB is
+available within PHP implementations. Since $where is not
+only a MongoDB reserved word, but valid PHP, an attacker can
+potentially submit code into a query by creating a $where
+variable.
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SQLi -An End-to-End Example
+
+
+arachni and see what we find, kicking it off with a scan:
+ https://webscantest.com/datastore
+
+AFR = extension stands for Arachni Framework Report and is
+    what arachni uses to store scan results. That AFR file
+    can then be converted to HTML, JSON, XML, or another
+    document format:
+
+
+arachni_reporter some_report.afr --reporter=html:outfile=my_report.html.zip
+
+@@@@@@@@
+asi queda el report del flag
+root@edwin:~# arachni_reporter 35.190.155.168\ 2019-09-15\ 20_47_17\ -0400.afr  --reporter=html:outfile=my_flag.html.zip
+
+
+Arachni - Web Application Security Scanner Framework v1.5.1
+   Author: Tasos "Zapotek" Laskos <tasos.laskos@arachni-scanner.com>
+
+           (With the support of the community and the Arachni Team.)
+
+   Website:       http://arachni-scanner.com
+   Documentation: http://arachni-scanner.com/wiki
+
+
+
+ [*] HTML: Creating HTML report...
+ [*] HTML: Saved in 'my_flag.html.zip'.
+
+
+Gathering Report Information
+
+Let's walk through the info we need to write our report.
+Category
+
+This is a time-based SQL injection attack.
+Timestamps
+
+For our timestamp, we can provide an estimate.
+
+
+URL
+
+The vulnerability's URL is provided clearly in the arachni report:
+
+
+Final Report
+
+Let's use this information to format our submission:
+
+
+CATEGORY: Blind SQLi (time-based)
+
+TIME: 2018-06-18 3:23 AM (3:23) UTC
+
+URL: http://webscantest.com/datastore/search_by_id.php
+
+PAYLOAD: sleep(16000/1000);
+
+METHODOLOGY: Vulnerability detected with Arachni scanner, v. 1.5.1-0.5.12
+
+INSTRUCTIONS TO REPRODUCE:
+
+1. Navigate to "/search_by_id.php"
+2. Enter the SQLi payload into the search form.
+3. Submit the query.
+4. The time-based SQLi code will cause a delay in the SQL thread execution.
+
+ATTACK SCENARIO:
+With a time-based SQL injection vulnerability to exploit, a malicious actor could use the time-delay combined with SQL expressions to enumerate sensitive information—authentication credentials, payment data, DB information, and more.
+
+
+Further Reading
+
+You can find out more about some of the topics we have discussed in this chapter at:
+
+    Arachni GitHub Page: https://github.com/Arachni/arachni
+    Exploit DB: https://ww.exploit-db.com
+    GoogleDorking: http://www.google-dorking.com
