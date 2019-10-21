@@ -1,0 +1,38 @@
+Chapter 6. CSRF and Insecure Session Authentication
+Cross-Site Request Forgery (CSRF)
+    is when an attacker takes advantage of a logged-in user's
+    authenticated state to excute malicious application
+    request and change the user's app in harmful ways.
+    Because the attacker can't see the result of any attack.
+
+    CSRF is often possible because authentication credentials
+    or cookies meant for one part of an application
+    mistakenly allow access to another.
+
+    Many frameworks (Spring, Joomla, and Django) have their
+    own solutions for preventing CSRF, which usually consist
+    of tying a cookie's authentication ability to a specific
+    in-app action. But, despite CSRF's status as a solved
+    problem, it persists as a recurring bug in the annual
+    OWASP Top-10 surveys. Like SQLi, CSRF is a simple-but-
+    damaging vulnerability that endures largely because of
+    the tension in software development between security and
+    productivity.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Building and Using CSRF PoCs
+
+    A CSRF proof of concept is a short HTML snippet that
+    when execute by a user. will take advantage of the
+    weak CSRF defence and change the application state in
+    unexepected or unwanted ways , validating the
+    vulnerability
+
+    In order to build our CSRF PoC, it can be helpful to see
+    the form as an HTTP action, so we can grab the type of
+    data-encoding, HTTP verb, and form-field information all
+    at once
+
+    

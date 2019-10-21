@@ -1,0 +1,64 @@
+Gathering Report Information
+
+Let's walk through the info we need to write our report.
+Category
+
+This is a CSRF POST method attack.
+Timestamps
+
+For our timestamp, we can use an approximate time for when we first submitted our CSRF PoC.
+URL
+
+In our case, the vulnerable URL is simply the target of the POST action:
+
+http://webscantest.com/csrf/csrfpost.php
+
+Payload
+
+For the PoC snippet we evil-ed up, the dastardly data alteration we made was forcing our user to select Peasoup as their favorite color. That's what we'll include as our Payload value.
+Methodology
+
+Our PoC was generated programmatically based on information taken from the intercepted form's HTTP request.
+Instructions to Reproduce
+
+For our instructions to reproduce, we can simply provide our CSRF PoC and list the very simple manual steps involved in submitting the forged form request.
+
+
+
+
+Attack Scenario
+
+Although the form where we've detected our vulnerability doesn't seem to be that critical (an individual's favorite color is not codeword-clearance-level information), the ability to change an individual's account information through unwanted application state changes is a serious flaw.
+Final Report
+
+Let's use this information to format our submission:
+
+CATEGORY: CSRF POST-based attack
+
+TIME: 2018-07-22 17:27 (17:27) UTC
+
+URL: http://webscantest.com/csrf/csrfpost.php
+
+PAYLOAD: Peasoup
+
+METHODOLOGY: Vulnerability detected with generated CSRF PoC included in reproduction instructions.
+
+INSTRUCTIONS TO REPRODUCE:
+
+1. Open the following CSRF PoC into a browser either locally or through a hosted environment:
+
+<html>
+ <form action="http://webscantest.com/csrf/csrfpost.php" enctype="application/x-www-form-urlencoded" method="POST">
+  <label>
+   color
+  </label>
+  <input name="dummy-property" type="text" value=""/>
+  <input name="property" type="hidden" value="Peasoup">
+  <input type="submit" value="http://webscantest.com/csrf/csrfpost.php"/>
+ </form>
+</html>
+
+2. Submit the form contained in the CSRF PoC.
+
+ATTACK SCENARIO:
+In the case of this POST-based CSRF attack, the vulnerability gives the attacker the opportunity to change a piece of the user's account information if they unwittingly submit the attacker's form. Giving a user a Peasoup-colored car instead of a flashy Cyan one would be a breach of the user's trust and a threat to the company's online ordering system and general bottom line.

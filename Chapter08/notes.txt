@@ -1,0 +1,77 @@
+Access Control and Security Through Obscurity
+
+
+Security through (or by) obscurity is a strategy in web application development that assumes a hacker can't hack what he can't see; even if a vulnerability exists, as long as it's appropriately hidden or obfuscated, it'll never be discovered and used for malicious purposes.
+
+that is used por growth hacking on web page
+
+When you assume that no one will find your hidden exploit, you're actually assuming no one, among the many people targeting you (directly or indirectly), over the course of your site's lifetime, with the resources of the entire internet, will be successful. It's a dangerous bet to make.
+
+this chapter used a external repositori . I don't used this
+for now only take the mayor information .
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Security by Obscurity – The Siren Song
+
+The appeal—and trap—of security by obscurity is the ease with which strategies can be implemented, especially when compared to more rigorous credential management systems. Obscuring a piece of sensitive information just means scrambling it, rearranging and reordering it, until it looks like gibberish. Looks like is the operative phrase, since patterns can be detected outside the scope of human intuition or estimation.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Data Leaks – What Information Matters?
+
+API Keys
+
+    API keys are typically used to provide project-level authorization for an API, service, or other organization-type object. APIs can be critical pieces of information to expose because of the extent of their permissions and the generally wider scope of API keys. A ready example of an API key might be the API key for a SaaS app, such as Twilio. A Twilio API Key doesn't differentiate access based on the role of the user; it just gives everyone who has it the ability to make API calls to the associated Twilio account.
+
+Access Tokens
+
+    Tokens are different from API keys. Access tokens are usually used to authenticate an individual (for example, session tokens and generally all cookies) as opposed to an entire service or project. Access tokens can still be sensitive data, depending on the scope of the token's authentication.
+
+    API keys are something that should generally never be public (unless it's the public half of a multi-key system) but your browser trades session authentication tokens back and forth with the sites you visit every day.
+
+    These distinctions aren't ironclad—they only describe a convention that can be freely broken—but they do provide a great jumping-off point for understanding some of the distinctions between different kinds of authentication data.
+
+    A common example of a popular access token would be an AWS Identity and Access Management (IAM) access token, which provides the basis for regulating an IAM role's access to different Amazon resources owned by the larger organizational account.
+
+
+Passwords
+    This is a no-brainer. Team/role-based and individual passwords, if stored in plaintext (or insufficiently encrypted) and exposed, are obviously dangerous points of vulnerability that hackers can use to infiltrate even more privileged systems. The username/password credential pattern underpins most of the services consumers interact with regularly, from social media profiles to bank accounts.
+
+
+    Hostnames
+    This can be a bit more of a gray area. Quite often, if a hostname is exposed in publicly available logs or in an API, if it's meant to be internal, it will be locked down to a VPN or privileged network. However, if they aren't protected by a VPN or firewall, even the IP or hostname of a box can be an exploitable liability.
+
+
+Machine RSA/Encryption Keys
+    Unlike API keys, which describe permissions for services, projects, and roles, a machine RSA, or similar key, represents the cryptographic identity of an individual machine (whether it's a laptop, server, and so on). Exposed RSA keys for even lesser services, such as continuous deployment build servers for smaller or staging environments, can provide the necessary foothold for an attacker to inject malicious elements into other parts of your network. If you're using a macOS-powered machine, you'll typically store the SSH keys associated with your machine in a hidden .ssh folder. A typical naming convention is id_rsa for you private key and id_rsa.pub for your public one.
+
+RSA (Rivest–Shamir–Adleman) is one of the first public-
+    key cryptosystems and is widely used for secure data
+    transmission. In such a cryptosystem, the encryption key
+    is public and it is different from the decryption key
+    which is kept secret (private).
+
+Account and Application Data
+    The information we've described up until now has all existed at the network level, with the exception of access tokens tied to in-app behavior (like session cookies). But data within the account itself—account settings, billing information, application configs, and so on—are all valuable targets for any attacker.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Low Value Data – What Doesn’t Matter
+
+Any discussion that includes important information to scout for bug bounties should cover data that is routinely leaked (without issue) by web apps every day.
+
+
+Generally Descriptive Error Messages
+    Although error messages can be a valid source of sensitive information that's only if, well, the message contains sensitive data. By itself, a stack trace that includes function names, exception types, and other common debugging info is not a vulnerability. The key differentiator here is: can you imagine an attack scenario using the information?
+
+404 and Other Non-200 Error Codes
+    404s and more exotic error codes are part of the normal functioning of an application. If sensitive information is exposed in a message, that's an issue, but otherwise, the code is to be expected.
+
+Username Enumeration
+    Savvy sites will contain error messages for sign-up and login pages that don't indicate whether a username exists: invalid credentials are vague enough to make it unclear whether it was the username or password that was incorrect, while the message username already exists instantly tells an attacker that there's a valid user target with that account.
+
+    Combined with a script that fuzzes different possible usernames (based on something like a dictionary attack), a determined assailant could create a list of all the site's users. Regardless, because it's so resource-intensive, common, and since it doesn't lead directly to a serious vulnerability like remote code execution, username enumeration does not merit a bug bounty payout for most companies.
+
+Browser Autocomplete or Save Password Functionality
+    Enabling a browser's form autocomplete or save password functionality is often recommended against because attackers who gain access to your browser can look back to leverage stored credentials. Since it already depends on another vulnerability to allow an attacker to access your browser in the first place, this bug does not merit a bounty payout.

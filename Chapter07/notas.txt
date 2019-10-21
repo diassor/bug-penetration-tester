@@ -1,0 +1,267 @@
+Chapter 7. Detecting XML External Entities
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Testing for XML Injection (OTG-INPVAL-008)
+
+https://www.owasp.org/index.php/Testing_for_XML_Injection_(OTG-INPVAL-008)
+
+    use  this page for more information about that
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+XXE is an abbreviation of XML External Entity
+    As an attack, it takes advantage of a flaw in an application's XML parser configuration to perform a number of malicious actions, including exposing the contents of protected files, or causing the exponential use of memory, resulting in a DoS attack.
+
+Simple Object Access Protocol (SOAP)
+    XML, like JSON, comprises a big part of the data transfer that powers the modern internet. As a system for encoding documents in both human and machine-readable ways, XML is common in tech stacks of a certain age, and persists in older API architectures
+
+JSON as common standard in 2017 OWASP named XXE 4th on their
+    list of the top ten Vulnerabilities
+
+    The nature of the attack stems from XML's conceptions of
+    entities, a primitive data type that combines a string
+    with a unique alias or reserved word. When the XML parser
+    expands the entity, the parser looks for and stores the
+    contents of the URI in the final XML document. If the
+    entity is pointing to a sensitive file on the web server,
+    then that information is compromised. There are different
+    vectors for inputting that XML, including application
+    form inputs. Because the vulnerability includes XML code
+    being mistakenly parsed (and executed) after it is
+    submitted through a form input, XXE can be classified as
+    a form of code injection.
+
+There are a couple of risk factors for XXE, which are allowed in by weakly or misconfigured XML parsers: if a parser accepts tainted data within the Document Type Declaration (DTD), and it processes that DTD and resolves external entities, the site is at risk. As an example, if you're using PHP, the language's documentation specifically states that you need to set the libxml_disable_entity_loader variable to true in order to disable the ability to load external entities (https://secure.php.net/manual/en/function.libxml-disable-entity-loader.php).
+
+
+Document Type Declaration (DTD)
+    There are a couple of risk factors for XXE, which are
+    allowed in by weakly or misconfigured XML parsers: if a
+    parser accepts tainted data within the Document Type
+    Declaration (DTD), and it processes that DTD and resolves
+    external entities, the site is at risk. As an example, if
+    you're using PHP, the language's documentation
+    specifically states that you need to set the
+    libxml_disable_entity_loader variable to true in order to
+    disable the ability to load external entities (https://
+    secure.php.net/manual/en/function.libxml-disable-entity-
+    loader.php).
+
+
+
+    Description ¶
+    libxml_disable_entity_loader ([ bool $disable = TRUE ] ) : bool
+
+    Disable/enable the ability to load external entities.
+
+
+    Parameters ¶
+
+    disable
+
+        Disable (TRUE) or enable (FALSE) libxml extensions (such as DOM, XMLWriter and XMLReader) to load external entities.
+
+
+        Return Values ¶
+
+        Returns the previous value.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+There are a few different types of XXE attack which can attempt Remote Code Execution (RCE) or – as we covered in the introduction – disclose information from targeted files. Here's an example of the second variety, from OWASP's entry for XXE:
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE foo [
+<!ELEMENT foo ANY >
+<!ENTITY xxe SYSTEM "file:///etc/passwd" >]><foo>&xxe;</foo>
+
+    XXE can also be used to conduct DoS attacks through an XML variant of a popular logic bomb tactic called a Billion Laughs. A DoS attack that occurs via a logic bomb—a piece of code that when executed causes the host to max out its resource consumption—is a bit different from a DoS attack caused by one or more outside agents (if there is more than one outside agent, then it would be a DDoS attack).
+
+    Here's an example of the a billion laughs XML snippet from Wikipedia's page on the attack:
+
+<?xml version="1.0"?>
+<!DOCTYPE lolz [
+ <!ENTITY lol "lol">
+ <!ELEMENT lolz (#PCDATA)>
+ <!ENTITY lol1 "&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;">
+ <!ENTITY lol2 "&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;&lol1;">
+ <!ENTITY lol3 "&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;">
+ <!ENTITY lol4 "&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;">
+ <!ENTITY lol5 "&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;&lol4;">
+ <!ENTITY lol6 "&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;&lol5;">
+ <!ENTITY lol7 "&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;&lol6;">
+ <!ENTITY lol8 "&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;&lol7;">
+ <!ENTITY lol9 "&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;&lol8;">
+]>
+<lolz>&lol9;</lolz>
+
+
+You can see that there's only one root element,
+    <lolz>&lol9;</lolz>.
+When the text of that element, &lol9;, is expanded
+(since it's a defined entity), the parser looks and sees the
+entity &lol8; and tries to expand it too, which leads it to
+&lol7;, then &lol6;, and on and on through the entity list –
+it's turtles and memory usage all the way down.
+
+The result is that after all the entity expansions have been
+processed, this small, less-than-1 KB snippet, will create
+10 to the 9th power lols, totaling over 3 GB of memory usage.
+
+
+
+Billion Laughs attacks are not unique to XML (you can do a
+similar attack in YAML or any other file format that
+supports references), but they do clearly illustrate the
+means through which an unguarded XXE vulnerability can wreak
+havoc.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+XML onjection vectors
+
+    XML injection and XML parsing-related vulnerabilities aren't always observable from the client-side code – the XML part of the processing chain could be occurring within the server formatting your client-side input.
+
+    Username: james
+    Password: Thew45p!
+    E-mail: james.mowry@terran.gov
+
+Then, before inserting itself into an XML-document-like-database, the application will build an individual XML node:
+
+    <user>
+    <username>james </username>
+    <password>Thew45p!  </password>
+    <userid>500 </userid>
+    <mail>james.mowry@terran.gov    </mail>
+    </user>
+    You can exploit this behavior to do different kinds of injection, including tag-based injection. That's when you would add a valid XML tag within your input, spoofing a valuable property (this assumes that a <userid> of 0 represents an admin user) by making an HTTP request along these lines:
+
+    Username: james
+    Password: Thew45p!</password><!--
+    E-mail: --><userid>0</userid><mail>james.mowry@terran.gov
+        That HTTP request, when assembled into the XML-like
+        datastore, results in one of the redundant <userid>
+        tags being filtered out, resulting in a perfectly
+        valid record that also escalates James's privileges.
+
+    The final result is as follows:
+    <?xml version="1.0" encoding="ISO-8859-1"?>
+<users>
+    <user>
+        <username>bob</username>
+        <password>!4rct0R</password>
+        <userid>0</userid>
+        <mail></mail>
+    </user>
+    <user>
+        <username>helward</username>
+        <password>!nverteDW0rld</password>
+        <userid>500</userid>
+        <mail>helward.mann@winverted.hmm</mail>
+    </user>
+    <user>
+        <username>james</username>
+        <password>Thew45p!</password><!--</password>
+        <userid>500</userid>
+        <mail>--><userid>0</userid><mail>james.mowry@terran.gov</mail>
+    </user>
+</users>
+
+
+    XML injection and XXE – stronger together
+
+We previously covered the anatomy of an XXE bug and how
+nested entity expansion can lead to exponential resource
+use. We've also covered how valid XML structures can be
+injected through RESTful APIs so that malicious tags are
+recreated in the XML formatting (we used a fictional case of
+an XML-like DB, but the analysis holds for any server-side
+XML processing layer).
+
+You can see how these two dynamics complement one another—if
+you have discovered a valid XML injection vector, that gives
+you the delivery mechanism with which to define and execute
+your XXE validation.
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Testing for XXE – where to find it, and how to verify it
+
+As we discussed previously, none of the inputs available to you need to state that the application accepts XML for a service to be vulnerable to XXE: the XML parsing layer of the application could be opaque to you, stitching together data that you sent as a GET or POST request into an XML document. Besides services that use XML as their primary document formatting system under-the-hood, there are also many API services that support different data formats by default. Even if you're making a GET request and receiving JSON in return, you can test whether or not that API endpoint can format your request as XML by trying the XML content header, that is, Content-Type: application/xml. Because services often have this capacity to switch between different content types that are built-in, the owner of the service might not know that it has the ability to format requests as XML.
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+
+XXE – an end-to-end example
+    Este ejemplo no lo ejecurare because i need install
+    a program and i don't want this, but de example
+    reflex that the used a XXE in a web site insided
+
+    For validating an XML bug, this is enough to open a report and begin the submission process. Using the entity expansion to replace values is a harmless PoC that, nevertheless, points to the possible damage other XXE attacks could accomplish.
+
+But, since we're working locally, let's do some of that damage. Leveraging our knowledge of the vulnerability, we can replace our intercepted values with an XXE snippet pulled from OWASP's Testing for XML Injection (https://www.owasp.org/index.php/Testing_for_XML_Injection_(OTG-INPVAL-008)) page:
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE foo [
+  <!ELEMENT foo ANY >
+  <!ENTITY xxe SYSTEM "file:///dev/random" >]><foo>&xxe;</foo>
+
+
+When the server attempts to expand the entity and access the contents of /dev/random, it can cause the server to crash. That's because /dev/random is a special, pseudorandom number generator, that will block the thread if there's insufficient entropy for the random number generation. Here, we've entered the snippet into another intercepted attempt to create an account:
+
+like this used a burp suite for change and insert snippet
+for take any info we're need
+
+
+Attack scenario
+
+We've already seen how an entity expansion pointing to /dev/random can cause a server to crash. Using an XXE attack, we can also disclose the contents of sensitive server files like /etc/password and, in some cases, perform RCE.
+
+
+Final report
+
+Let's use this information to format our submission:
+
+CATEGORY: XXE attack
+
+TIME: 2018-07-28 16:27 (16:27) UTC
+
+URL: http://192.168.33.10/
+
+PAYLOAD:
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE replace [<!ENTITY example "Success"> ]>
+<root><name>Edward Hawks</name><tel>5555555555</tel><email>&example;</email><password>roguemoon</password></root>
+
+METHODOLOGY: The vulnerability was discovered by manually intercepting and editing the create account form to include the above entity replacement changes.
+
+INSTRUCTIONS TO REPRODUCE:
+
+1. Navigate to the create account form at http://192.168.33.10/.
+
+2. Enter dummy values into the form and submit it.
+
+3. Intercept the generated HTTP POST request using a tool like Burp Proxy. Edit the XML data to include the payload above.
+
+4. Forward the POST request on to the server.
+
+ATTACK SCENARIO:
+In the case of this XXE attack, a malicious agent could submit entity expansion code to retrieve the contents of a sensitive file on the server, like the contents of /etc/password, or make a call to /dev/random and crash the server, or even use a different DoS method with the nested entity expansion strategy of a "Billion Laughs"-style attack (https://en.wikipedia.org/wiki/Billion_laughs_attack).
+
+
+In this chapter, we covered XXE and touched on the nature of XML parsing attacks, discussed XXE within the historical context of the Billion Laughs vulnerability, reviewed a specific weakness that makes many XML parsers vulnerable to XXE, and end-gamed some of the possible attack scenarios associated with an XXE bug, in addition to taking an XXE vulnerability all the way from discovery to report submission.
+
+links
+    Billion Laughs Attack: https://en.wikipedia.org/wiki/Billion_laughs_attack
+    Hunting XXE For Fun and Profit: https://www.bugcrowd.com/advice-from-a-bug-hunter-xxe/

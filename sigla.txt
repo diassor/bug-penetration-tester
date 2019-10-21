@@ -20,3 +20,43 @@ Relative Attack Surface Quotient (RASQ)
     wherever data can enter or exit the app. Attack-surface
     analysis describes the methods used to describe the vulnerable
     parts of an application
+
+XML stands for eXtensible Markup Language. XML is a markup
+language much like HTML. XML was designed to store and
+transport data. XML was designed to be self-descriptive.
+
+
+XXE is an abbreviation of XML External Entity
+    As an attack, it takes advantage of a flaw in an application's XML parser configuration to perform a number of malicious actions, including exposing the contents of protected files, or causing the exponential use of memory, resulting in a DoS attack.
+
+Simple Object Access Protocol (SOAP)
+    XML, like JSON, comprises a big part of the data transfer that powers the modern internet. As a system for encoding documents in both human and machine-readable ways, XML is common in tech stacks of a certain age, and persists in older API architectures
+
+
+Document Type Declaration (DTD)
+    There are a couple of risk factors for XXE, which are
+    allowed in by weakly or misconfigured XML parsers: if a
+    parser accepts tainted data within the Document Type
+    Declaration (DTD), and it processes that DTD and resolves
+    external entities, the site is at risk. As an example, if
+    you're using PHP, the language's documentation
+    specifically states that you need to set the
+    libxml_disable_entity_loader variable to true in order to
+    disable the ability to load external entities (https://
+    secure.php.net/manual/en/function.libxml-disable-entity-
+    loader.php).
+
+
+
+Remote Code Execution (RCE)
+    There are a few different types of XXE attack which can
+    attempt Remote Code Execution (RCE) or – as we covered in
+    the introduction – disclose information from targeted
+    files. Here's an example of the second variety, from
+    OWASP's entry for XXE:
+
+RSA (Rivest–Shamir–Adleman) is one of the first public-
+    key cryptosystems and is widely used for secure data
+    transmission. In such a cryptosystem, the encryption key
+    is public and it is different from the decryption key
+    which is kept secret (private).
