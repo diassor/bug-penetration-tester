@@ -75,3 +75,113 @@ Username Enumeration
 
 Browser Autocomplete or Save Password Functionality
     Enabling a browser's form autocomplete or save password functionality is often recommended against because attackers who gain access to your browser can look back to leverage stored credentials. Since it already depends on another vulnerability to allow an attacker to access your browser in the first place, this bug does not merit a bounty payout.
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Data Leak Vectors
+
+So far we've listed different types of information, but not where we can expect to find anything. Here are a few places where a website or app can unintentionally expose sensitive information.
+
+(Fuzz testing or Fuzzing is a Black Box software testing technique, which basically consists in finding implementation bugs using malformed/semi-malformed data injection in an automated fashion. {https://www.owasp.org/index.php/Fuzzing})
+
+
+Config Files
+Config management is an entire branch of operations that ensures configuration credentials are never exposed. Whether you're injecting them at runtime via a service such as consul (see Further reading for a link) or simply leaving them unversioned by including them in your project's .gitignore, there are varying degrees of sophistication in the available solutions.
+
+But sometimes those measures fail and a config file is included in a server's root directory, logs on an exposed build server, application error messages, or a public code repository. That can make the sensitive contents of that config fair game for any attackers.
+
+Earlier, we discussed discovering sensitive config files in the context of applying fuzzing tools such as wfuzz that use wordlists to attempt to access files that have been left on a web server and mistakenly left accessible. We used the SecLists
+
+
+Public Code Repos
+    With more developers using open-source sites, such as GitHub, to network and share code, it's easy for flat file credentials and text-based secrets to be mistakenly included in a repo's commit history. It's important to note here that if you mistakenly commit sensitive data to your project's Git history, the first thing you should do is rotate those credentials.
+
+Don't try and push a commit removing the info (keep in mind, it can still be found in a previous commit); just refresh those API keys or passwords first, and then worry about removing the info from the repo later.
+exaple when people use git and repositori which their datas
+(https://medium.com/@morgannegagne/a-very-expensive-aws-mistake-56a3334ed9ad)
+Security
+    (GitGuardian (https://www.gitguardian.com/tweet) and GitMonkey (https://gitmonkey.io/) )
+
+
+Client Source Code
+    Client source code—the static JavaScript, HTML, and CSS executed in your browser—is different from the entire source code repo represented by an entire Git project. You're less likely to find a config file with application-level secrets and the scope of the business logic exposed will probably be minimal (even an all-JavaScript, Angular, or React app will feature most logic in a connected API) but there are still opportunities to harvest weak cookies, futz with client-side validations, and look for old settings, resources, and functionality in commented-out code.
+
+
+Hidden Fields
+    Hidden fields are technically a part of the client code, but merit extra consideration as a prime vector for malicious data input. It's important if you're messing with hidden fields to avoid submitting values for honeypot fields. Honeypot fields are hidden input tags that, since a a normal GUI user can't see them, usually don't get don't get submitted—unless that form is being fuzzed by a script that's injecting values into every available input field it can.
+
+
+Error Messages
+    Just like we covered in Chapter 5, SQL, Code Injection, and Scanners, where we discussed the error-based SQL injection attack and how a determined attacker can often use public error messages propagated up from the SQL DB to enumerate information, error messages can leak data in other contexts. In application error logs, GUI error messages, API errors, and other error vectors, everything from machine-level RSA keys to user info can be exposed.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Unmasking Hidden Content – How to Pull the Curtains Back
+
+Exploring obfuscated, neglected, or otherwise exposed data is a critical exercise, both as part of a site's opening reconnaissance and as a dedicated end in itself.
+
+We'll cover a couple of different ways, some passive and some more active, that will help you discover sensitive information that will win you a bounty payout.
+
+Preliminary Code Analysis
+    It's a simple step, but walking through the page's source and being able to get a sense of the code style and quality, framework, any extra connected services, and just a general feel for the code base powering the app is essential, and can lead to surprising finds.
+
+Using Burp to Uncover Hidden Fields
+    The first way is to examine any HTTP traffic generated by forms to ensure you catch any information being passed that wasn't available in the GUI.
+
+    The second way is with burp suite
+        option => Proxy
+        Response Modification and (check 2 line Prominently highlight unhidden fields )
+    Now when you walk through an application using the proxy-linked browser, you can see any hidden fields on a page highlighted in a bright red div:
+
+    By highlighting any fields you come across, Burp allows you to pick up on secret info at the same time you're mapping your target application's attack surface.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Data Leakage – An End-to-End Example
+    Let's try out some of our new techniques on WebGoat, OWASP's deliberately-vulnerable Java application.
+
+    for this moment i don't want install WebGoat for this chapter
+
+    Gathering Report Information
+
+Now that we've brought our company to its knees, let's walk through the info we need to write our report:
+
+    *   Category: This is a data leak of sensitive information. In this case, the CEO's salary and SSN.
+    *   Timestamps: For our timestamp, we can just approximate a time manually.
+    *   URL: For our URL, we can use the page where we discovered the info in the source code:
+
+http://localhost:8081/WebGoat/start.mvc#lesson/ClientSideFiltering.lesson/1
+
+    *   Methodology: Skipping payload, we can just head to the methodology. In this case, we simply came across the information after a close inspection of the page's source code.
+
+    *   Instructions to reproduce: Simple enough. Navigate to the affected page and look at its source.
+
+    *   Attack scenario: For our attack scenario, it's important to prove the danger the data poses in the wrong hands. In this case, it's clear. Exposing sensitive financial information along with his SSN puts the CEO at a clear risk of cyberattack and identity theft.
+
+Final Report
+
+Let's use this information to format our submission:
+
+*   Category: Data leak of sensitive employee data.
+*    Time: 2017-03-25 17:27 (17:27) UTC.
+*    URL: http://localhost:8081/WebGoat/start.mvc#lesson/ClientSideFiltering.lesson/1
+
+*    Methodology: Vulnerability detected after inspecting the source code of the affected page.
+
+*    Instructions to procedure:
+    1)    Navigate to the affected URL
+    2)    Inspect the page's source code
+
+*    Attack scenario: With access to the CEO and other privileged employees' personal information, an attacker could steal those individuals' identities, engage in spear-phishing campaigns to compromise company resources, and generally wreck havoc with the financial health of both the company and its employees.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Further Reading
+
+You can find out more about some of the topics we have discussed in this chapter at:
+
+    Google Cloud Endpoints on API Keys versus Authentication Tokens: https://cloud.google.com/endpoints/docs/openapi/when-why-api-key
+
+    Consul Config Management: https://www.consul.io/
