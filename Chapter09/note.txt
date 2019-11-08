@@ -1,0 +1,142 @@
+Framework and Application-Specific Vulnerabilities
+
+Identifying a framework or application-specific vulnerability, including Known Component Vulnerabilities (identified by their CVE designation, which we'll discuss later), is a tricky business.
+
+It's a universal stipulation of bug bounty programs that companies don't reward the same vulnerability twice—the first
+researcher to disclose a vulnerability is the only one that's rewarded. This goes hand in hand with the fact that companies
+usually won't reward already publicly disclosed bugs within two weeks of the discovery of the original zero-day (like everyone,
+they need time to deploy a patch), and they aren't interested in vendor-level vulnerabilities in third-party libraries. This might
+seem like a waste of time, then, except if we take two important points into consideration.
+
+It's all about the attack scenario. This is the most essential point: most guidelines for KCVs get thrown out the window in the
+face of a valid attack scenario. Companies aren't interested in contributing a patch upstream just to improve the jQuery attack
+surface—that's a lot of time spent validating, communicating about, and fixing a vulnerability ultimately on behalf of another
+organization. But if you can convince them that this affects their business, it can provoke a change (contributing a patch,
+updating the component, switching to a different solution for that service) that will trigger your reward.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Technical Requirements
+
+dos formas de usar wpscan por medio de CLI o burp suite extencion
+in this case i used burp ..
+for de shell used docker for no mix differents lenguage of
+programs insite the computer .
+
+The WPScan CLI comes with a variety of install options. Once again, we'll be using the container software Docker to download and run the wpscan CLI from within the context of a custom execution context packaged with everything it needs.
+
+Assuming that Docker is installed, to pull down the latest WPScan CLI image, simply run this quick command:
+
+    docker pull wpscanteam/wpscan
+
+Then you have all the dependencies necessary to access the CLI using the docker run command to bootstrap wpscan. Here's an example one-liner straight from Docker Hub image's documentation:
+
+    docker run -it --rm wpscanteam/wpscan -u https://yourblog.com [options]
+
+
+For testing purposes, the same team behind WPScan also provides a deliberately vulnerable WordPress install, which is similarly run off of a Docker container. To build the image locally, clone the GitHub repository (https://github.com/wpscanteam/VulnerableWordPress) and navigate into its root directory. Then, run the following commands:
+
+    docker build --rm -t wpscan/vulnerablewordpress .
+
+    docker run --name vulnerablewordpress -d -p 80:80 -p 3306:3306 wpscan/vulnerablewordpress
+
+Now, you should have a WordPress installation ready to be set up at localhost:80:
+
+
+use info from github
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Known Component Vulnerabilities and CVEs – A Quick Refresher
+
+
+The Common Vulnerabilities and Exposures (CVE) system describes itself as a dictionary that provides definitions for publicly disclosed vulnerabilities and disclosures. Its goal is to make it easier to share cybersecurity-related data across groups and technologies, understanding that the benefit of open coordination outweighs the risk of publicly advertising valid attacks. It's useful to keep in mind that CVE is a method for linking vulnerability databases and not a vulnerability database itself. That said, you'll often find CVE IDs to links to CVE information pages integrated into tools designed to detect known vulnerabilities. CVE entries are even built into the U.S National Vulnerability Database.
+
+The structure of a CVE ID is direct: the identifier consists of the year plus a four digit (or more) integer. Until early 2015, CVE identifiers could only have a unique integer up to four digits long, but because that limits the total number of assignable IDs to 9,999 a year, it had to be expanded, and now can be of any length.
+
+In addition to its ID, each CVE also typically comes packaged with certain information:
+
+    An indication of whether the CVE has an entry or candidate status
+    A brief description of the vulnerability or exposure
+    Any appropriate references (for example, vulnerability reports, advisories from the OVAL-ID)
+
+OVAL-IDs are the unique identifiers that distinguish OVAL definitions. From the OVAL website:
+
+    OVAL definitions are standardized, machine-readable tests written in the Open Vulnerability and Assessment Language (OVAL®) that check computer systems for the presence of software vulnerabilities, configuration issues, programs, and patches.
+
+OVAL definition tests, like CVEs, are an attempt to coordinate an open, transparent system for standardizing pentesting vocabulary, and allow for more sharing between ethical hackers and their tools.
+
+This quick introduction/refresher should come in handy the next time that you use any number of tools that leverage CVE as their primary security reference.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+WordPress – Using WPScan
+
+According to WordPress, their framework powers 31% of all sites
+
+WordPress, with its myriad of plugins and configuration options, provides a large attack surface that, often managed by administrators with little technical experience, can be tricky to secure. Every shoddily-coded plugins, monkey-patched pieces of WP core, or ancient installations can be the foothold necessary for an attacker to deface or compromise a WP site.
+
+WPScan functionality comes packaged in a few different tools. For our purposes, the most important are the containerized Docker command-line interface and the Burp extension.
+
+
+WPScan as a Dockerized CLI
+
+    The advantage of using WPScan as a Dockerized CLI is that we can still take full advantage of the CLI—allowing us to embed
+    the script in a larger automation setup—while not having to worry about dependency management issues like keeping our
+    Ruby version up-to-date. We can even write a simple wrapper around the docker run command so that we don't need to enter
+    so much boilerplate every time we use the script.
+
+    For example, if we create a shell script called wpscan.sh and call our Docker command, passing in the "$@" character so that all of our flags and command-line arguments get passed through the shell script to the docker command, this is what we come up with:
+
+        #!/bin/sh
+        docker run -it --rm wpscanteam/wpscan "$@"
+
+    Then, we can make our wrapper script executable with chmod, and symlink it to our /usr/local/bin so that we can access it in our $PATH:
+        chmod u+x /Full/path/to/wpscan.sh
+        sudo ln -s /Full/path/to/wpscan.sh /usr/local/bin/wpscan
+
+    Done. Now, we can call the CLI script via our wpscan wrapper using the same syntax as if we had installed WPScan as a gem, but without having to keep track of which Ruby version we'd installed the gem to, or having to make sure that we had ffi or any other dependency libraries installed:
+
+        wpscan --help
+
+    our Technical requirements section, you should already have a WP instance ready to set up on localhost:80
+
+    After selecting our language of choice, you should be taken to a form for basic information about your site (your site
+    title, admin superuser username, notification email, and so on):
+
+    Filling that out, you'll be redirected to a success page:
+
+    Once you've logged in for the first time, navigate over to the plain localhost:80 and view the actual home page of your WP site:
+
+    Keep in mind that you can't ping localhost:80 from wpscan because it's executing from inside the Docker container. In order to feed our Dockerized WP instance to our Dockerized WPScanning service, we need to use the URL of the Docker container running WordPress.
+
+    We can find the Docker host IP by using docker ps to find the container ID of the Docker process running WP. We can then run docker inspect <CONTAINER_ID> to return some JSON with the IP address. For us, that IP address is 172.17.0.2. Then, we run this command to scan our vulnerable WordPress site. If we were targeting a site on the public internet, we could simply skip this step:
+
+        wpscan --url 172.17.0.2:80
+
+    Running the preceding command, this is what the output of our scan looks like:
+
+    you can immediately see several findings worth following up—Interesting entry from robots.txt: http://172.17.0.2/super-secret-admin-page/ seems particularly interesting, considering that enticing URI. But if we continue down the list of vulnerabilities, we will be able to see several config files. Looking for authentication credentials, hidden directories, and other goodies, we navigate to one of the exposed config files, wp-config.txt:
+
+
+Burp and WPScan
+    BApp Store
+    You can also load extensions manually by selecting the extension file (it can be in either Java, Python, or Ruby) from within the manual install modal:
+
+    You might find that you need to install the environment for the extension. Setting up each language is easy: in the case of Python, we follow the link to the Jython (a Python interpreter implemented in Java) home page and follow the installation instructions. Then, in our Options section of the Extender Tab, we can add the path to the Jython jar file:
+
+
+    Once it's finished installing, we should see a WordPress Scanner tab. If we click on it, we will be able to see settings and output panels, ready for analysis:
+
+    The WPScanner extension piggybacks on the passive analysis Burp does as you browse through a site using your proxy browser. After clicking through a couple of pages, viewing our sample post, and opening the comment submission field of our vulnerable WP instance, we can see that our issues list has already been populated with several vulnerabilities
+
+
+
+    Perusing this list, we can see several varieties of XSS. Investigating further, let's try an svg tag-related vulnerability in the comment submission field, probing another part of the site's content sanitation functionality—we know that the WP instance is vulnerable, of course, but we are still working through the location and nature of the bugs
+
+        <svg/onload=alert(document.location.origin)>
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

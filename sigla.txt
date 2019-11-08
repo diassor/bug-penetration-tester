@@ -60,3 +60,11 @@ RSA (Rivest–Shamir–Adleman) is one of the first public-
     transmission. In such a cryptosystem, the encryption key
     is public and it is different from the decryption key
     which is kept secret (private).
+
+Common Vulnerabilities and Exposures (CVE)
+    system describes itself as a dictionary that provides
+    definitions for publicly disclosed vulnerabilities and
+    disclosures. Its goal is to make it easier to share
+    cybersecurity-related data across groups and technologies,
+    understanding that the benefit of open coordination outweighs
+    the risk of publicly advertising valid attacks
