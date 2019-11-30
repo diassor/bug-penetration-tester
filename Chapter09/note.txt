@@ -138,5 +138,10 @@ Burp and WPScan
 
         <svg/onload=alert(document.location.origin)>
 
+    Our testing paid off. Although in this case we knew we'd find something if we dug deep enough, tools like WPScan can provide valuable, application-specific context and leads for further investigation, without adding a heavy new tool or difficult-to-integrate testing system.
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Ruby on Rails – Rubysec Tools and Tricks
