@@ -145,3 +145,79 @@ Burp and WPScan
 
 
 Ruby on Rails – Rubysec Tools and Tricks
+
+
+Exploiting RESTful MVC Routing Patterns
+
+
+Because Rails is so opinionated toward RESTful MVC patterns applied to CRUD apps, the URL routing structure is often easy to
+intuit. Understanding the /resource/action and /resource/{identifier}/action patterns allows an attacker to play around
+with potentially dangerous paths like /users/{identifier}/update that can be inferred from simple observation.
+
+
+Checking the Version for Particular Weaknesses
+
+
+As an application framework, Rails, like all popular software, has gotten waves of security updates over the years, addressing
+critical issues like handling SQL injection from within Active Record, or extending the CSRF protection scheme to include more
+basic request types. But because the barrier to building a Rails application is so low, and the language and framework are so
+productivity-friendly, Rails apps are often spun up quickly. And since Rails is a common small business/prototyping solution that
+is nevertheless often pressed into mature production service, there's a healthy amount of legacy Rails code out there. That
+combination of a quickly-assembled architecture with expectations of longevity, exacerbated by the plug-n-play nature
+of Rails scaffolding (entire CRUD apps can be created with just a few opinionated commands) means that Rails can be particularly
+susceptible to vulnerabilities caused by misconfigurations or unsafe defaults
+
+
+Testing Cookie Data and Authentication
+
+
+Rails makes it very easy to store potentially secure information as cookies, and is therefore more susceptible to leaking potential information through cookies that are encoded, but it's (critically) not encrypted.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Django – Strategies for the Python App
+
+
+Django, as a common framework for quickly building CRUD-style apps that's been successfully implemented in a dynamically-typed
+language designed for developer productivity, naturally suffers many of the same pitfalls as Rails and shares many of the same weaknesses. Django also holds a strong opinion about RESTful,
+MVC-centric URL routing, allowing for the same URL hacking discussed in the preceding section. That said, Django provides a
+lot of great, global protections for common vulnerabilities like CSRF, XSS, and injection attacks out-of-the-box.
+
+
+Checking for DEBUG = True
+
+Remote Code Execution on a Facebook server
+https://blog.scrt.ch/2018/08/24/remote-code-execution-on-a-facebook-server/
+es este ejemplo podemos ver como por medio de PoC puede verse
+que django enta en DEBUG=false y permite dormir el server por 30
+seg y cambiar las cookies
+
+It's a forehead-slapping mistake, but still a common one—leaving the Django developer-level logging on in production. Shipping an
+app with the DEBUG setting enabled allows for a few problems to crop up, including comprehensive error tracebacks that can
+expose sensitive pages or data. If you suspect that DEBUG has
+been enabled on the target Django application, try generating an error to trigger the display of a harmful traceback. Leaving the
+DEBUG setting enabled is so common that, earlier this year, a single researcher conducted an investigation and within a week
+had discovered 28,165 Django apps with the setting enabled (https://www.bleepingcomputer.com/news/security/misconfigured-django-apps-are-exposing-secret-api-keys-database-passwords/).
+        esta page only allow membres for see that info
+
+
+Probing the Admin Page
+
+Django ships with a default admin page that is also often foregone in favor of a third-party plugin or other admin-related extension. If the default admin page has been neglected or the admin integration is incomplete, it can provide a fruitful attack surface to test and explore.
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Further Reading
+
+You can find out more about some of the topics we have discussed in this chapter at:
+
+    WordPress Official Site: https://wordpress.org/
+    CVE FAQ: https://cve.mitre.org/about/faqs.html.
+    OVAL Home page: https://oval.mitre.org/repository/about/overview.html.
+    WPScan Home page: https://wpscan.org/.
+    OWASP Ruby on Rails Cheatsheet: https://www.owasp.org/index.php/Ruby_on_Rails_Cheatsheet.
+    The Official Rails Security Guide: https://guides.rubyonrails.org/security.html.

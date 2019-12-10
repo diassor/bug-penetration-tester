@@ -68,3 +68,13 @@ Common Vulnerabilities and Exposures (CVE)
     cybersecurity-related data across groups and technologies,
     understanding that the benefit of open coordination outweighs
     the risk of publicly advertising valid attacks
+
+
+OVAL = definitions are standardized, machine-readable tests
+    written in the Open Vulnerability and Assessment Language
+    (OVAL®) that check computer systems for the presence of
+    software vulnerabilities, configuration issues, programs, and
+    patches.
+
+ Network Operations Center (NOC),
+ 

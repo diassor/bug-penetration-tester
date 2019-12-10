@@ -1,0 +1,287 @@
+Other Tools
+
+This chapter will cover both how to evaluate adopting new tools, as well as providing a simple overview of other useful Curate software, sites, communities, and educational resources. We'll cover everything from programs, such as scanners and Burp extensions, to crowd-sourced databases of attack snippets, such as SecLists.
+
+The following topics will be covered in this chapter:
+
+    Evaluating new tools
+    Paid versus free editions
+    A quick overview of Nikto, Kali, Burp extensions, and more
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Evaluating New Tools – What to Look For
+
+
+It's critical when you're looking at a new piece of pentesting software to analyze the value it brings to your workflow.
+
+It's also critical to ask many of the same questions you'd be asking of an open source, SaaS, or paid app in any other space.
+
+Questions should include the following:
+
+    What capabilities does this add to my workflow that I don't already possess?
+
+    How important are these new features?
+        What do I predict their impact being?
+    D
+    oes this lock me into plans or services or a particular design?
+
+    Does it have a mature CLI?
+
+    How does it perform against known positive cases
+        (in the case of scanners and other detection software)?
+
+    If it's open source, how old is the project?
+        When was the last commit and what's the general frequency of commits?
+        Are there a lot of outstanding issues?
+            Are issues addressed?
+
+    In the case of a free tool, is enough functionality exposed to the free/community user?
+    Or is the bulk of what you need locked behind a paid license or subscription?
+
+    In the case of a paid tool, does it integrate with an outside workflow
+        (incoming and outgoing webhooks, either client libraries in several languages or a RESTful interface)?
+    Or does it lock you into its system?
+
+
+
+Some of these questions don't have clear answers, but thinking through them will help you understand the value proposition of
+any software you're considering adopting.
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Paid Versus Free Editions – What Makes a Tool Worth It?
+
+Evaluating whether to start paying for a security tool is just an extension of the process of deciding whether to adopt it in
+the first place, except with more emphasis on relative impact.
+
+Burp Suite Pro is undeniably a useful extension of the community version.
+    You get the scanner, which integrates tightly with Burp's scoping and attack surface mapping features, and advanced
+    manual tools, such as the ability to generate a CSRF from an intercepted HTTP request (which we'll cover later in this chapter), along with other goodies.
+
+But as we showed in our chapter on CSRF, generating a CSRF PoC is pretty easy to automate yourself,
+in a way that better integrates with tools outside of Burp.
+
+If you don't find yourself needing the other advanced manual tools, then it basically comes down to the scanner.
+
+Even if you already have a scanner as part of your workflow though, quite often different scanners are better at scanning
+different vulnerabilities—you'll get the best picture of a site if you apply multiple scanners to it (which, considering the cost of scanners, is easier said then done).
+
+There's also an extra layer to the value component of Burp.
+
+Although you shouldn't purchase a tool with marginal utility just because it's good value, it is an important consideration.
+
+Scanners are expensive.
+It's not uncommon for the cheapest licenses for top-quality application scanning products to reach into the thousands for a small team
+(the cheapest offering from Netsparker, a security company, is just under $5,000/year for a desktop app that allows you to scan five websites).
+
+This is clearly an attempt on their part to capture an enterprise security team that wants a reproducible,
+automated vulnerability detection scheme as part of their general application pipeline/stack.
+    But that phenomenon is common to a lot of the pentesting tool chain, as companies with know-how want to target B2B
+    enterprise opportunities, because that's where the money is. Hackers don't have departmental budgets to throw around.
+
+In that context, the Burp Pro license is a great deal, unlocking more than just scanning functionality for a price that's less
+than a month of the license subscription of other,
+popular products.
+
+If you've followed along with this walkthrough, or generally use Burp as the lynchpin of your security workflow, you should
+strongly consider purchasing.
+If you're spending time inside Burp, it's worth it.
+
+
+Let's consider another tool, SecApps.
+
+SecApps is a browser-based pentesting client created by
+
+Websecurify that allows for a completely cloud-based workflow,
+with no desktop apps, local files, or dependencies beyond the browser required.
+
+This is a solution that would fit comfortably into a Chromebook-type setup,
+where the hardware needs are minimal.
+
+There's a lot to recommend SecApps:
+    though they provide some basic free services (such as their HTTP proxy),
+    most of their functionality is on their paid tier
+        (it should be noted that beyond their browser client, they also offer solutions for CI/CD testing),
+    which is still comparatively affordable at $29/month.
+    But even with that low adoption cost, we should still address the same questions we do when considering any new workflow:
+
+Does this lock me into plans or services or a particular design?
+
+ Yes.
+Moving to an all-cloud workflow takes away a lot of the say you have over your environment.
+Because your data is all in cloud storage (from a technical perspective), you have no control over it.
+    In addition, none of your workflows can be ported over to another system, considering all your integrations, the interaction of all your tools, and so on,
+    occurs on opaque layers of the stack you can't rely on accessing.
+
+
+In the case of a paid tool, does it integrate with an outside workflow
+(incoming and outgoing webhooks, either client libraries in several languages or a RESTful interface)?
+Or does it lock you into its system?
+
+This is a similar, related question to the general one about vendor lock.
+The previous question is more about the compatibility of your overall design, and whether that general workflow
+(and architecture) is portable.
+
+This question is more about integrating around the edges.
+
+Can parts of your existing workflow be incorporated?
+    If the new tools works great for everything but X, could you still incorporate that in some way?
+    Through a common data format (JSON, YAML, or XML) or a programmatic API interface, could you extend the service's functionality?
+
+The answer for SecApps seems to be sort of.
+    There are some basic CLI options for the more CI/CD solutions,
+    such as their Cohesion app, which is essentially a source code analysis tool DevOps engineers can drop into their
+    build chain.
+
+    But there's no documentation about using an API to interact with the same backend services the browser-based tooling
+    connects to.
+
+There is a native application wrapper called pown apps,
+created by Pown.js,
+but the documentation is pretty spartan and CLI options are limited (see Does it have a mature CLI?),
+
+and when we navigate to the Pown.js repository,
+we don't see much to inspire confidence.
+
+Many repositories are new, none have a large contribution graph, and issue/community support seems haphazard
+    (see also If it's open source, how old is the project?
+    When was the last commit and what's the general frequency of commits?
+    Are there a lot of outstanding issues?
+    Are issues addressed?).
+
+That doesn't work for us.
+As great as the promise of the service is, it's too opinionated about what our pentesting regimen should look like.
+
+Contrary to the Unix philosophy of small, single-serving components with specialized concerns and the shared Lingua
+Franca of plain unicode,
+
+SecApps makes us install and use large, complex apps
+    (either through the web or natively via the pown apps bridge)
+    that we don't have visibility into and can't control.
+
+    Other users with different processes around pentesting engagements will naturally have their own opinions about
+    these and other tools,
+    but hopefully us analyzing these tools within the context of this book's workflow will illustrate the key decision points
+    and general process.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A Quick Overview of Other Options – Nikto, Kali, Burp Extensions, and More
+
+
+There's such a profusion of tools in security that it can be difficult to know what's worth testing for your own workflow. This section includes short descriptions of different types of tools, categorized by the function they serve the pentester.
+Scanners
+
+There are many options for scanners that specialize in gathering or testing a wide range of vulnerability-related information. The few we've used in this work represent just a small portion of the overall market. Here are a few options; some are command line-only while others have both a CLI and a GUI, though all offer at least some degree of CLI control, and all are free.
+Nikto
+
+Nikto is an established scanner known for its server fingerprinting capabilities. Beyond that though, it's a good choice in general for scanning for OWASP Top 10 vulnerabilities.
+Zed Attack Proxy
+
+The Zed Attack Proxy (ZAP) proxy and scanner is a tool created by OWASP, the non-profit organization dedicated to web application vulnerability research. ZAP is often held up as the free analog to the scanner included in Burp Suite Pro versions.
+w3af
+
+w3af is an open source, Python-powered scanner that features both an interactive CLI shell and a GUI dashboard. w3af started out as the brainchild of Andres Riancho in 2006 and in subsequent years has grown to include thousands of public contributors from across the world.
+
+
+
+ 
+nmap and python-nmap
+
+Most of this book has revolved around testing web applications within the context of their browser-based attack surface—form fields, unsecured endpoints, and things you can generally view within a browser or browser extension.
+
+But if you're looking to do more network analysis—checking for open ports, probing firewalls, and looking for connections beyond the standard HTTP/ TCP—nmap is a popular weapon of choice and an industry standard.
+
+python-nmap is exactly what it sounds—a Python-based port of the software. This can be extremely useful if you'd like to hack on nmap. Whether you're adding checks to the existing port discovery of  nmap or grafting on layers of custom alert logic, the python-nmap package is a great starting point that frees you from re-implementing the bread-and-butter features of the standard nmap functionality.
+Aircrack-ng
+
+Aircrack-ng is another network scanning tool that's become almost a standard for Wi-Fi cracking and packet capture. As before, though we didn't cover general network analysis that much in this book, there's a great suite of tools for anyone looking to get started.
+
+And critically, unlike something such as social engineering, which is an element of pentesting we specifically did not cover since it's so often out-of-bounds for most programs, companies will reward researchers for pointing out holes in their network.
+Wireshark
+
+Continuing with network scanners, Wireshark is another battle-tested network analysis program, with deep packet inspection and other low-level data capture functionality that can be crucial for understanding an app's cryptographic security posture. If you develop a greater emphasis on network-level security issues, Wireshark should be on your radar, if not a part of your toolset.
+SpiderFoot
+
+SpiderFoot (http://www.spiderfoot.net/) is a scanner that specializes in Open Source Intelligence (OSINT), combing through social media networks, DNS records, and other publicly available information to assemble a picture of the target application's attack surface and possible vulnerabilities.
+
+
+
+Although undeniably useful, in this book, I've chosen to focus more on scanners that interact directly with the application property at hand. SpiderFoot is wonderful for the kind of in-depth research that goes into preparing social engineering attacks, such as getting emails and position titles, and understanding the relationships between key corporate players. It's also great for finding related, dependent systems that could be compromised as a way of ultimately infiltrating an organization.
+
+Fortunately (or unfortunately) for us, those types of attacks are out of scope for most pentesting engagements. Social engineering attacks and attacking vendors/third parties are almost always called out in a testing guideline's rules of engagement as forbidden behavior. It's a cool scanner and useful tool, just not for our purposes.
+Resources
+
+These are general sources of educational content; aggregated tutorials, snippets, and walkthroughs that are rich with insight.
+FuzzDB
+
+FuzzDB (https://github.com/fuzzdb-project/fuzzdb) is a dictionary of attack patterns contributed by the open source security community. Along with curated collections, such as SecLists, it's a great source for things such as XSS inputs.
+Pentesting Cheatsheet
+
+JDow.io (https://jdow.io) provides a handy resource called the Web Application Penetration Testing cheatsheet that walks through many of the steps in a pentesting engagement, complete with code snippets and descriptions of how to accomplish each step.
+Exploit DB
+
+Exploit DB (https://www.exploit-db.com/) bills itself as the ultimate archive of exploits, shellcode, and security papers (their emphasis). It is run by Offensive Security, an organization also responsible for one of the more prestigious security certifications, the Offensive Security Certified Professional (OSCP ) cert. Exploit DB also contains a handy database of Google Dorks, which we will dive into further in our chapter on SQL injection.
+
+
+Awesome Web Security
+
+The awesomelists.top brand publishes curated content for a variety of tech niches (they have their own awesome AWS series, naturally). Their security list, awesome web security (https://github.com/qazbnm456/awesome-web-security), is a great resource, and even links to other related curated repos, such as the organization's own awesome-bug-bounty collection of bug bounty resources. It also contains a number of links to great write-ups and walkthroughs on topics such as browser extension data leaks, IoT vulnerability scanning, and how data science and machine learning intersect with security.
+Kali Linux
+
+Kali (formerly BackTrack) is a security-focused Linux distribution that comes pre-packaged with a lot of the tools we've been using throughout the book, such as Burp Suite, as well as others, such as Maltego, Metasploit, and Wireshark.
+
+And because you can boot and run Kali from a live CD, it's potentially very lightweight. There's no need to do a persistent install on hardware and no need to write any data to disk. These two features of Kali (it's portability and preloaded assets), make it a great choice for pentesters who might not have regular access to their own machine.
+Source Code Analysis (White Box) Tools
+
+Source code analysis is typically outside the scope of a public bug bounty program (which is why is doesn't get more coverage in this book). Companies are naturally hesitant to open source their code to a body of security researchers if open source isn't a part of their business model.
+
+But if you find yourself in a private contract where you engage in white box testing with access to source code, or you have access to the code through GitHub or Bitbucket, there are several tools you can use to help identify problem areas.
+Pytaint
+
+Pytaint is a tool that allows you to do taint analysis on Python code. That means tracing the flow of data through the application, from entry points in input fields, API endpoints and other ingress pipelines, looking for areas where the data is mishandled or improperly sanitized.
+
+
+Bandit
+
+Bandit is another great source code analysis tool that analyzes Python using a series of customizable plugins that can be used to focus the tool on a specific set of vulnerabilities. Unlike pytaint, Bandit doesn't follow a particular methodology like taint analysis; rather, the logic applied depends on your plugin integrations.
+Brakeman
+
+Brakeman (https://brakemanscanner.org/) is considered one of the top security static analysis tools for Rails apps, and is used by industry leaders such as GitHub to secure their internal RoR stack. If you have access to the source code, Brakeman is an excellent tool for discovering Rails-based issues.
+Burp
+
+There are many ways to expand on the Burp Suite workflows we've covered in this book. Some of the extra solutions will be paid features, to show the appeal of considering a subscription, and others will simply be other extensions or features we didn't have time to take advantage of in the course of our engagements.
+Burp Extensions
+
+There are a lot of great Burp extensions you can use to build on your Burp-based workflows and better leverage Burp's native capabilities.
+JSON Beautifier
+
+An easy add, the JSON beautifier pretty-prints any JSON you interact with within Burp Suite. It's simple, but formatting can be a big productivity boost if there are portions of your process that have a lot of manual interaction. There's also a similar set of beautifiers/pretty-printers for other languages, including YML, JS, SAML, and more other common data types.
+
+
+
+
+Retire.js
+
+Remember when we built a small set of scripts around Retire.js to check client-side JavaScript for vulnerabilities in Chapter 3, Preparing for an Engagement, There's also a Burp extension that allows you to do just that within a Burp testing session. If Burp is a large part of your workflow, it might be worth considering.
+Python Scripter
+
+The Python scripter extensions execute Python code on every Burp HTTP request. This can make it much easier to graft on extra functionality than if you are trying to add Java code or your own extension directly.
+Burp Notes
+
+Considering documentation's importance in writing great submission reports, tools such as Burp Notes, which can be configured to save HTTP requests and other data from different Burp tools, can tighten your workflow, eliminating manual copy and pasting.
+Burp REST API
+
+The Burp REST API plugin (https://github.com/vmware/burp-rest-api) allows you to run your Burp instance within a wrapper that makes its chief functionality available through a RESTful API. This is obviously a great addition if you're looking to integrate Burp with your existing automation.
+SaaS-Specific Extensions
+
+The aforementioned extensions are mostly just standalone additions to the existing Burp workflow. But Burp also supports extensions that act as bridges to other security toolsets. Faraday (https://www.faradaysec.com/) describes itself as a multi-user, collaborative pentesting environment that a security team can use to share scope, target data, discoveries, and other engagement information. There's also tool-specific bridges, such as SQLiPy, which is an extension for kicking off sqlmap scans from within Burp.
+Using Burp Pro to Generate a CSRF PoC
+
+A great method for testing for CSRF and generating a code PoC for a CSRF vulnerability is using some of the built-in tooling available. Unfortunately, the ability to generate a CSRF PoC is only available for Burp Suite Pro users.
+
+For our test, we're going to revisit a page on webscantest.com that we examined in Chapter 4, Unsanitized Data – An XSS Case Study, for XSS vulnerabilities that's also vulnerable to CSRF attacks.
